@@ -1,0 +1,28 @@
+package frc.robot.subsystems;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Climber extends SubsystemBase {
+  // 1 is pull
+  public CANSparkMax winch = new CANSparkMax(30, MotorType.kBrushless);
+  // 1 is up
+  public CANSparkMax hook = new CANSparkMax(31, MotorType.kBrushless);
+  
+  public Climber() {
+    setSpark(winch);
+    winch.setSmartCurrentLimit(40);
+    setSpark(hook);
+    hook.setSmartCurrentLimit(30);
+  }
+
+  private void setSpark(CANSparkMax spark) {
+    spark.restoreFactoryDefaults();
+    spark.setIdleMode(IdleMode.kBrake);
+    spark.burnFlash();
+  }
+}
+

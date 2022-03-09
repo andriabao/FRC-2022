@@ -1,0 +1,121 @@
+package frc.robot.commands;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.Control;
+import frc.robot.Robot;
+import frc.robot.subsystems.BallHandler.BallHandlerState;
+
+public class AutoIntake extends CommandBase {
+  private static final double angleP = 1.0 / 40.0;
+
+  private boolean isCanceled, quitWithoutBall;
+  private int targetBallCnt;
+  private Control control = Control.getInstance();
+  private PIDController pidController = new PIDController(Constants.TURNING_GAINS.kP,
+  Constants.TURNING_GAINS.kI, Constants.TURNING_GAINS.kD);
+
+  public AutoIntake(int _targetBallCnt, boolean _quiteWithoutBall) {
+    targetBallCnt = _targetBallCnt;
+    quitWithoutBall = _quiteWithoutBall;
+    addRequirements(Robot.driveSubsystem);
+    addRequirements(Robot.ballHandler);
+  }
+
+  public AutoIntake() {
+    this(5, false);
+  }
+
+  @Override
+  public void initialize() {
+    isCanceled = false;
+    System.out.printf("start auto intake with %d ball\n", 
+        Robot.ballHandler.ballCnt);
+    if (Robot.ballHandler.ballCnt == 5 && !control.isOverride()) {
+      System.out.println("have 5 balls already, cancel this");
+      isCanceled = true;
+    } else { // actually start
+      Robot.ballHandler.state = BallHandlerState.INTAKE;
+    }
+  }
+
+  @Override
+  public void execute() {
+    // if (!Robot.coprocessor.isBallGood 
+    //     || !Robot.coprocessor.isBallFound) {
+    //   Robot.driveWithJoystick.execute();
+    //   NetworkTableInstance.getDefault().getEntry("/drivetrain/auto_state").setString(
+    //       "AUTO_INTAKE_NO_BALL");
+    //   return;
+    // }
+
+    //////////////////////////////////////////////////////////////////////////////
+
+
+    double currentAngle = Robot.driveSubsystem.gyro.getAngle()-Robot.driveSubsystem.gyroZero;
+    double targetAngle = currentAngle + Robot.coprocessor.targetFieldTheta;
+    
+    currentAngle = Robot.driveSubsystem.gyro.getAngle()-Robot.driveSubsystem.gyroZero;
+    
+    // double targetAngle = Robot.coprocessor.ballFieldTheta;
+    // double currentAngle = Robot.coprocessor.fieldTheta;
+    // double currentAngle = Robot.driveSubsystem.gyro.getAngle()-Robot.driveSubsystem.gyroZero;
+
+    if (!Robot.coprocessor.isPoseGood) {
+      targetAngle = Robot.coprocessor.ballRelativeDirLeft;
+      currentAngle = 0;
+    }
+
+    // double angleError = ((targetAngle - currentAngle)%360+360)%360;
+    double angleError = Robot.coprocessor.ballRelativeDirLeft;;
+
+    if(!Robot.coprocessor.isBallFound) {
+      angleError = 0;
+    }
+
+    if(angleError>180)
+      angleError -= 360;
+    if(Double.isNaN(angleError))
+      angleError = 0;
+    
+    double angleSpeed = angleP * angleError;
+    if (Math.abs(angleError) > 0.5)
+      angleSpeed += Math.signum(angleError) * 0.1;
+    
+    double linearSpeed = 0;
+
+    double ballDis = Robot.coprocessor.ballDis-0.9;
+    if(ballDis < 0) {
+      ballDis = 0;
+    }
+    if (Math.abs(angleError) < 10)
+      linearSpeed = 0.5 + 0.7 * ballDis;
+    
+    Robot.driveSubsystem.setVelocity(linearSpeed + angleSpeed * -1, 
+                                     linearSpeed + angleSpeed);
+
+    NetworkTableInstance.getDefault().getEntry("/drivetrain/auto_state").setString(
+        "AUTO_INTAKE_BALL");
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    Robot.ballHandler.state = BallHandlerState.IDLE;
+    NetworkTableInstance.getDefault().getEntry("/drivetrain/auto_state").setString(
+        "MANUAL");
+  }
+
+  @Override
+  public boolean isFinished() {
+    if (isCanceled)
+      return true;
+    boolean ballFound = Robot.coprocessor.isConnected && Robot.coprocessor.isBallGood && 
+        Robot.coprocessor.isBallFound;
+    if (quitWithoutBall && !ballFound)
+      return true;
+    return !control.isOverrideAutoIntake() && Robot.ballHandler.ballCnt >= targetBallCnt;
+  }
+}
