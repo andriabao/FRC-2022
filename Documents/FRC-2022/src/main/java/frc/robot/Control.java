@@ -234,7 +234,7 @@ public class Control {
     private static final int AUTO_SHOOT_BUTTON = 4;
     ///CHANG SHOOT 12 INTAK 15
     private static final int MANUAL_SHOOT_BUTTON = 12;
-    private static final int AUTO_INTAKE_BUTTON = 15;
+    private static final int AUTO_INTAKE_BUTTON = 7;
     private static final int MANUAL_INTAKE_BUTTON = 2;
     private static final int EJECT_BUTTON = 16;
     private static final int TOGGLE_INTAKE_BUTTON = 14;
