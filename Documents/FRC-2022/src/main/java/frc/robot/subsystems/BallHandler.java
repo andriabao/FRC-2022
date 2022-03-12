@@ -129,25 +129,15 @@ public class BallHandler extends SubsystemBase {
         break;
 
       case SHOOT:
-        shooterConveyer.set(0);
-      // if we just start shooting, 
+        
+        // if we just enter shooting state, hold for RPM to ramp up
         if (lastState != BallHandlerState.SHOOT)
           shootingState = ShootingState.HOLD;
-        // if a ball just got shot, 
+        // if a ball just got shot, wait for RPM to get back
         if (lastShooterBeam == BALL && shooterBeamBreaker.get() == NO_BALL) {
           shootingState = ShootingState.HOLD;
           isHoldingForLastBall.update(true);
           isFreeSpinning.update(false);
-        }
-
-        // if(shooterBeamBreaker.get() == BALL && 
-        // Math.abs(desiredRPM - encoder.getVelocity()) < Constants.MAX_SHOOT_RPM_ERROR) {
-        //   shooterConveyer.set(-0.5);
-        //   shootingState = ShootingState.HOLD;
-        // }
-
-        if( Math.abs(desiredRPM - encoder.getVelocity()) < Constants.MAX_SHOOT_RPM_ERROR) {
-          shooterConveyer.set(1);
         }
         // we start shooting only if there is enough gap from last shot and 
         // and that the wheel spins fast enough
@@ -158,20 +148,11 @@ public class BallHandler extends SubsystemBase {
           shootingState = ShootingState.SHOOT;
 
         ballIntake.set(0);
-        // run intake conveyer to make sure the last ball gets shot
-        // but not when there are too many balls to prevent jamming
-        // shooterConveyer.set(ballCnt <= 3 || Control.getInstance().isOverride()? 1 : 0);
-        // shooterConveyer.set(shootingState == ShootingState.SHOOT || 
-        //                     shooterBeamBreaker.get() == NO_BALL? 1 : 0);
+        shooterConveyer.set(shootingState == ShootingState.SHOOT? 1 : 0);
         shooterPIDController.setReference(desiredRPM, ControlType.kVelocity,
             0, Constants.SHOOTER_KS);
         
-        isFreeSpinning.update(true);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // if(indexBeamBreaker.get() == NO_BALL && shooterBeamBreaker.get() == NO_BALL && lastState == BallHandlerState.SHOOT)
-        //   shooterPIDController.setReference(0, ControlType.kVelocity,
-        //   0, Constants.SHOOTER_KS);        
+        isFreeSpinning.update(true);     
 
         break;
 

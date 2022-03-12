@@ -93,19 +93,6 @@ public class AutoShoot extends CommandBase {
         Robot.coprocessor.isTargetFound, Robot.ballHandler.ballCnt);
     
     isCanceled = false;
-    // if(!Robot.coprocessor.isConnected || !Robot.coprocessor.isTargetGood){
-    //   System.out.println("coprocessor and/or CV not working, cancle AutoShoot");
-    //   isCanceled = true;
-    // } else if ((!Robot.coprocessor.isPoseGood || !Robot.coprocessor.isFieldCalibrated()) && 
-    //            !Robot.coprocessor.isTargetFound) {
-    //   System.out.println("field not calibrated and no target found, cancle AutoShoot");
-    //   isCanceled = true;
-    // } else if (!Robot.coprocessor.isPoseGood) {
-    //   System.out.println("shoot without T265");
-    // } else if (Robot.ballHandler.ballCnt == 0 && !control.isOverrideAutoShoot()) {
-    //   System.out.println("no ball, cancle auto shoot");
-    //   isCanceled = true;
-    // }
 
     startTime = Timer.getFPGATimestamp();
     isDone = new TimeDelayedBoolean(Constants.AUTO_SHOOT_HOLD_TIME);
@@ -117,7 +104,7 @@ public class AutoShoot extends CommandBase {
       isChangeDis = true;
       System.out.println("change of distance required");
     }
-    Robot.ballHandler.state = BallHandlerState.SHOOT;
+    Robot.ballHandler.state = BallHandlerState.PRESPIN;
 
     isWaitForDisStablize = false;
     startShooting = false;
@@ -128,8 +115,6 @@ public class AutoShoot extends CommandBase {
 
   @Override
   public void execute() {
-
-    
     //aiming david
     if(Robot.coprocessor.isTargetFound == 1) {
       double heading = Robot.driveSubsystem.gyro.getAngle()-Robot.driveSubsystem.gyroZero;
@@ -161,71 +146,20 @@ public class AutoShoot extends CommandBase {
 
     } 
 
-
-
-    // targetAngle = Robot.coprocessor.targetFieldTheta;
-    // currentAngle = Robot.coprocessor.fieldTheta;
-    // targetAngle -= Constants.SHOOTER_ANGLE;
-    // if (!Robot.coprocessor.isPoseGood) {
-    //   targetAngle = Robot.coprocessor.targetRelativeDirLeft;
-    //   currentAngle = 0;
-    // }
-
-    // angleError = Robot.coprocessor.targetFieldTheta;
-    // //angleError = ((targetAngle - currentAngle)%360+360)%360;
-    // if(angleError>180)
-    //   angleError -= 360;
-    // if(Double.isNaN(angleError))
-    //   angleError = 0;
-    
-    // SmartDashboard.putNumber("auto_shoot/target_angle", targetAngle);
-    // SmartDashboard.putNumber("auto_shoot/current_angle", currentAngle);
-    // SmartDashboard.putNumber("auto_shoot/error", angleError);
-    
-    // double angleSpeed = angleP * angleError;
-    // if (Math.abs(angleSpeed) > 1.2)
-    //   angleSpeed = 1.2 * Math.signum(angleSpeed);
-    // if (Math.abs(angleError) > 0.4)
-    //   angleSpeed += Math.signum(angleError) * 0.08;
-
-    // if (isChangeDis 
-    //     && Robot.coprocessor.targetDis < maxDis
-    //     && Robot.coprocessor.targetDis > minDis) {
-    //   isChangeDis = false;
-    //   isWaitForDisStablize = true;
-    //   isDisStable.update(true);
-    // } else if (isWaitForDisStablize && isDisStable.get()) {
-    //   isWaitForDisStablize = false;
-    // }
-    // double linearSpeed = 0;
-    // if (Math.abs(angleError) < 10 && isChangeDis){
-    //   if (Robot.coprocessor.targetDis > maxDis)
-    //     linearSpeed = disP * (maxDis - Robot.coprocessor.targetDis) - 0.4;
-    //   else if (Robot.coprocessor.targetDis < minDis)
-    //     linearSpeed = disP * (minDis - Robot.coprocessor.targetDis) + 0.4;
-    // }
-    // Robot.driveSubsystem.setVelocity(linearSpeed + angleSpeed * -1, 
-    //                                  linearSpeed + angleSpeed);
-
-    // if ((Math.abs(angleError) < Constants.MAX_SHOOT_ANGLE_ERROR 
-    //     && Robot.coprocessor.isTargetFound
-    //     && (!isChangeDis && !isWaitForDisStablize))
-    //     || control.isOverrideAutoShoot())
-    
-    startShooting = true;
+    // TODO change to constants
+    if (!startShooting && (math.abs(targetAngle<3) || Timer.getFPGATimestamp() - startTime > 3)) {
+      startShooting = true;
+    }
 
     Robot.ballHandler.desiredRPM = calculateRPM(
       Robot.coprocessor.bestFit
       // Robot.coprocessor.yMin
     );
     
-    Robot.ballHandler.state = BallHandlerState.SHOOT;
-    
-    // // make sure shooter turns for a while for ball to get out
-    
-    // System.out.printf("at %.2f desired %.2f actual %.2f\n",
-    //     Timer.getFPGATimestamp() - startTime, Robot.ballHandler.desiredRPM,
-    //     Robot.ballHandler.encoder.getVelocity());
+    if (startShooting) {
+      Robot.ballHandler.state = BallHandlerState.SHOOT;
+    }
+
   }
 
   @Override
