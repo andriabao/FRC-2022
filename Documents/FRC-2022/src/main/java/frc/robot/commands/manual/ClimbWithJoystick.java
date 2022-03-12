@@ -13,33 +13,29 @@ public class ClimbWithJoystick extends CommandBase {
 
   @Override
   public void execute() {
-    // TODO limit and overrides
-    boolean override = false;
-    if(Robot.climber.leftEncoder.getPosition() <= Robot.climber.leftZero 
-    && Robot.climber.left.get() < 0){
-      Robot.climber.left.set(0);
-      override = true;
+    double leftSpeed = control.getLeftWinchSpeed();
+    double rightSpeed = control.getRightWinchSpeed();
+    if (!control.isOverride()) {
+      if(Robot.climber.leftEncoder.getPosition() <= Robot.climber.leftZero 
+      && leftSpeed < 0){
+        leftSpeed = 0;
+      }
+      if(Robot.climber.leftEncoder.getPosition() >= Robot.climber.leftZero + 180 
+      && leftSpeed > 0){
+        leftSpeed = 0;
+      }
+      if(Robot.climber.rightEncoder.getPosition() <= Robot.climber.rightZero 
+      && rightSpeed < 0){
+        rightSpeed = 0;
+      }
+      if(Robot.climber.rightEncoder.getPosition() >= Robot.climber.rightZero + 180 
+      && rightSpeed > 0){
+        rightSpeed = 0;
+      }
     }
-    if(Robot.climber.leftEncoder.getPosition() >= Robot.climber.leftZero + 180 
-    && Robot.climber.left.get() > 0){
-      Robot.climber.left.set(0);
-      override = true;
-    }
-    if(Robot.climber.rightEncoder.getPosition() <= Robot.climber.rightZero 
-    && Robot.climber.right.get() < 0){
-      Robot.climber.right.set(0);
-      override = true;
-    }
-    if(Robot.climber.rightEncoder.getPosition() >= Robot.climber.rightZero + 180 
-    && Robot.climber.right.get() > 0){
-      Robot.climber.right.set(0);
-      override = true;
-    }
-
-    if(!override) {
-      Robot.climber.left.set(control.getLeftWinchSpeed());
-      Robot.climber.right.set(control.getRightWinchSpeed());  
-    }
+    
+    Robot.climber.left.set(leftSpeed);
+    Robot.climber.right.set(rightSpeed);  
   }
 
   @Override
