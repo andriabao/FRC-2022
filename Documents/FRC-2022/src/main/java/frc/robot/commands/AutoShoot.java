@@ -37,11 +37,36 @@ public class AutoShoot extends CommandBase {
     addRequirements(Robot.ballHandler);
     innerGoal = _innerGoal;
 
-    dis2rpm.put(new InterpolatingDouble(11.0), new InterpolatingDouble(1636.0));
-    dis2rpm.put(new InterpolatingDouble(30.0), new InterpolatingDouble(1710.0));
-    dis2rpm.put(new InterpolatingDouble(34.0), new InterpolatingDouble(1766.0));
-    dis2rpm.put(new InterpolatingDouble(53.0), new InterpolatingDouble(1831.0));
-    dis2rpm.put(new InterpolatingDouble(72.0), new InterpolatingDouble(2050.0));
+    // dis2rpm.put(new InterpolatingDouble(9.0), new InterpolatingDouble(1616.0));
+    // dis2rpm.put(new InterpolatingDouble(19.0), new InterpolatingDouble(1616.0));
+    // dis2rpm.put(new InterpolatingDouble(20.0), new InterpolatingDouble(1648.0));
+    // dis2rpm.put(new InterpolatingDouble(30.0), new InterpolatingDouble(1740.0));
+    // dis2rpm.put(new InterpolatingDouble(31.0), new InterpolatingDouble(1786.0));
+    // dis2rpm.put(new InterpolatingDouble(34.0), new InterpolatingDouble(1786.0));
+    // dis2rpm.put(new InterpolatingDouble(43.0), new InterpolatingDouble(1821.0));
+    // dis2rpm.put(new InterpolatingDouble(52.0), new InterpolatingDouble(1937.0));
+    // dis2rpm.put(new InterpolatingDouble(54.0), new InterpolatingDouble(1961.0));
+    // dis2rpm.put(new InterpolatingDouble(58.0), new InterpolatingDouble(1961.0));
+    // dis2rpm.put(new InterpolatingDouble(61.0), new InterpolatingDouble(1992.0));
+    // dis2rpm.put(new InterpolatingDouble(72.0), new InterpolatingDouble(2200.0));
+    // dis2rpm.put(new InterpolatingDouble(1000.0), new InterpolatingDouble(2300.0));
+
+/////////////////////////////////////////////////////////////////////////////
+
+    dis2rpm.put(new InterpolatingDouble(88.629), new InterpolatingDouble(1616.0));
+    dis2rpm.put(new InterpolatingDouble(100.249), new InterpolatingDouble(1616.0));
+    dis2rpm.put(new InterpolatingDouble(101.411), new InterpolatingDouble(1648.0));
+    dis2rpm.put(new InterpolatingDouble(113.031), new InterpolatingDouble(1740.0));
+    dis2rpm.put(new InterpolatingDouble(114.193), new InterpolatingDouble(1786.0));
+    dis2rpm.put(new InterpolatingDouble(117.679), new InterpolatingDouble(1786.0));
+    dis2rpm.put(new InterpolatingDouble(128.137), new InterpolatingDouble(1821.0));
+    dis2rpm.put(new InterpolatingDouble(138.595), new InterpolatingDouble(1937.0));
+    dis2rpm.put(new InterpolatingDouble(140.919), new InterpolatingDouble(1961.0));
+    dis2rpm.put(new InterpolatingDouble(145.567), new InterpolatingDouble(1961.0));
+    dis2rpm.put(new InterpolatingDouble(149.053), new InterpolatingDouble(1992.0));
+    // dis2rpm.put(new InterpolatingDouble(72.0), new InterpolatingDouble(2200.0));
+    dis2rpm.put(new InterpolatingDouble(1000.0), new InterpolatingDouble(2300.0));
+
 
 
 
@@ -117,19 +142,21 @@ public class AutoShoot extends CommandBase {
 
       ///////jason
       double angleSpeed = angleP * tarAngle;
-      // if (Math.abs(angleSpeed) > 1.2)
-      //   angleSpeed = 1.2 * Math.signum(angleSpeed);
-      // if (Math.abs(tarAngle) > 0.4)
-      //   angleSpeed += Math.signum(tarAngle) * 0.08;
+      if (Math.abs(angleSpeed) > 1.2)
+        angleSpeed = 1.2 * Math.signum(angleSpeed);
+      if (Math.abs(tarAngle) > 0.4)
+        angleSpeed += Math.signum(tarAngle) * 0.08;
       /////////
     
       heading = Robot.driveSubsystem.gyro.getAngle()-Robot.driveSubsystem.gyroZero;
       double pid = pidController.calculate(heading, setpoint);
     
       MathUtil.clamp(pid, 0, Constants.DRIVE_MAX_V);
-    
-      // Robot.driveSubsystem.setVelocity((angleSpeed), -(angleSpeed));
-      Robot.driveSubsystem.setVelocity((leftFF + pid), -(rightFF + pid));
+
+      if(Math.abs(Robot.coprocessor.targetFieldTheta) > 0.3){
+          Robot.driveSubsystem.setVelocity((leftFF + pid), -(rightFF + pid));
+        // Robot.driveSubsystem.setVelocity((angleSpeed), -(angleSpeed));
+      }
 
     } 
 
@@ -187,7 +214,8 @@ public class AutoShoot extends CommandBase {
     startShooting = true;
 
     Robot.ballHandler.desiredRPM = calculateRPM(
-      Robot.coprocessor.yMin
+      Robot.coprocessor.bestFit
+      // Robot.coprocessor.yMin
     );
     
     Robot.ballHandler.state = BallHandlerState.SHOOT;

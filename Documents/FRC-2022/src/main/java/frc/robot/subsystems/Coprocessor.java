@@ -16,7 +16,7 @@ public class Coprocessor extends SubsystemBase {
   // flags coresponding to connection of Nano, tracking camera, RGB camera
   public boolean isConnected;
   // target
-  public double targetFieldTheta, targetRelativeDirLeft, targetDis, yMin;
+  public double targetFieldTheta, targetRelativeDirLeft, targetDis, yMin, bestFit;
   public double isTargetFound;
 
   public boolean isTargetGood;
@@ -24,7 +24,7 @@ public class Coprocessor extends SubsystemBase {
   public double fieldX, fieldY, fieldTheta;
   public boolean isPoseGood;
   // ball
-  public double ballDis, ballFieldTheta, ballRelativeDirLeft, ballFound;
+  public double ballDis, ballFieldTheta, ballRelativeDirLeft, ballFound, lastUpdate;
   public boolean isBallGood, isBallFound;
   public double innerDis, innerAngleDelta;
 
@@ -49,6 +49,7 @@ public class Coprocessor extends SubsystemBase {
     
     targetFieldTheta = odomTable.getEntry("x_angle").getDouble(0); //
     targetDis = odomTable.getEntry("distance").getDouble(0); //
+    bestFit = odomTable.getEntry("line_best_fit").getDouble(0);
    
     // ball
     ballFound = ballTable.getEntry("ball_detected").getDouble(0); //
@@ -61,6 +62,7 @@ public class Coprocessor extends SubsystemBase {
     ballDis = ballTable.getEntry("ball_distance").getDouble(0); //
     ballRelativeDirLeft = ballTable.getEntry("ball_angle").getDouble(0); //
     ballFieldTheta = ballTable.getEntry("ball_angle").getDouble(0); //
+    lastUpdate = ballTable.getEntry("last_update_time").getDouble(0);
     // solve the triangle between robot, outer target, and inner target
     if (isFieldCalibrated() && isTargetGood && isPoseGood && isTargetFound ==1) {
       // law of cos

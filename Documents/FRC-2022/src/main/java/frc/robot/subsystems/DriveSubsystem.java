@@ -37,6 +37,7 @@ public class DriveSubsystem extends SubsystemBase {
   private boolean isBrakeMode = false;
   private DriveControlState driveControlState = DriveControlState.OPEN_LOOP;
   private TrajectoryFollower trajectoryFollower = new TrajectoryFollower();
+  private double leftEncoderZero, rightEncoderZero;
 
   public AHRS gyro;
   public double currGyro;
@@ -76,7 +77,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     gyro = new AHRS(SPI.Port.kMXP);
     gyroZero = gyro.getAngle();
-    currGyro = gyro.getAngle() - gyroZero;
+    currGyro = getHeading();
+    resetEncoders();
   }
 
   @Override
@@ -171,6 +173,29 @@ public class DriveSubsystem extends SubsystemBase {
     setBrakeMode(driveSignal.getBrakeMode());
     leftMaster.set(driveSignal.getLeft());
     rightMaster.set(driveSignal.getRight());
+  }
+
+  public double getHeading(){
+    double currGyro = gyro.getAngle() - gyroZero;
+
+    return currGyro;
+  }
+
+  public double getLeftEncoderDistance(){
+    return leftEncoder.getPosition() - leftEncoderZero;
+  }
+
+  public double getRightEncoderDistance(){
+    return rightEncoder.getPosition() - rightEncoderZero;
+  }
+
+  public double getAvgEncoderDistance(){
+    return (getLeftEncoderDistance() + getRightEncoderDistance())/2;
+  }
+
+  public void resetEncoders(){
+    leftEncoderZero = leftEncoder.getPosition();
+    rightEncoderZero = rightEncoder.getPosition();
   }
 
   private void setSpark(final CANSparkMax spark) {

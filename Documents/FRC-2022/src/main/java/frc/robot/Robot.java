@@ -79,28 +79,41 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    Robot.ballHandler.ballCnt = 3;
-    matchStartTime = Timer.getFPGATimestamp();
+    // Robot.ballHandler.ballCnt = 3;
+    // matchStartTime = Timer.getFPGATimestamp();
 
-    while (coprocessor.isConnected 
-           && !coprocessor.isFieldCalibrated()
-           && coprocessor.isPoseGood
-           && coprocessor.isTargetGood
-           && Timer.getFPGATimestamp() - matchStartTime < 3) {
-      coprocessor.calibrate_field();
-      Timer.delay(0.02);
-    }
-    if (!coprocessor.isConnected || !coprocessor.isTargetGood) {
-              System.out.println("emergency move");
-              new SequentialCommandGroup(
-                new ManualShoot(3).withTimeout(4),
-                new DriveUntil(1).withTimeout(3)
-              ).schedule();
-    } else if (!coprocessor.isPoseGood) {
-      new SixBall().schedule();
-    } else {
+    // while (coprocessor.isConnected 
+    //        && !coprocessor.isFieldCalibrated()
+    //        && coprocessor.isPoseGood
+    //        && coprocessor.isTargetGood
+    //        && Timer.getFPGATimestamp() - matchStartTime < 3) {
+    //   coprocessor.calibrate_field();
+    //   Timer.delay(0.02);
+    // }
+    // if (!coprocessor.isConnected || !coprocessor.isTargetGood) {
+    //           System.out.println("emergency move");
+    //           new SequentialCommandGroup(
+    //             new ManualShoot(3).withTimeout(4),
+    //             new DriveUntil(1).withTimeout(3)
+    //           ).schedule();
+    // } else if (!coprocessor.isPoseGood) {
+    //   new SixBall().schedule();
+    // } else {
       autonomousChooser.getSelected().schedule();
-    }
+      // new SequentialCommandGroup(
+      //                new MoveIntake().withTimeout(1),
+      //                new DriveUntil(1).withTimeout(0.5),
+      //                new ManualIntake().withTimeout(1.5),
+      //                new AutoShoot().withTimeout(4),
+      //                new DriveUntil(0.5, -0.5, () -> Robot.coprocessor.isBallFound).withTimeout(1.55),
+      //                new DriveUntil(0).withTimeout(1.5),
+      //                new AutoIntake().withTimeout(5),
+      //                new DriveUntil(-0.7, 0.7, () -> Robot.coprocessor.isTargetFound == 1).withTimeout(1),
+      //                new AutoShoot().withTimeout(4)
+
+      //              ).schedule();
+      //   new DriveUntil(1).withTimeout(3)
+    // }
   }
 
   /* RobotPeriodic is called after the coresponding periodic of the stage,
@@ -161,7 +174,7 @@ public class Robot extends TimedRobot {
     else if(control.isToggleIntake())
       moveIntake.schedule();
 
-    if (control.getWinchSpeed() > 0.1 && camera == null) {
+    if (control.getLeftWinchSpeed() > 0.1 &&  camera == null) {
       camera = CameraServer.startAutomaticCapture();
       camera.setResolution(320, 240);
       camera.setFPS(20);

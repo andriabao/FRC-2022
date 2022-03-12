@@ -5,16 +5,24 @@ import frc.robot.Robot;
 import frc.robot.commands.AutoIntake;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.DriveUntil;
+import frc.robot.commands.MoveIntake;
+import frc.robot.commands.manual.ManualIntake;
 
 public class SevenBallStable extends SequentialCommandGroup {
   public SevenBallStable() {
-    addCommands(new AutoShoot(true).withTimeout(5));
-    addCommands(new DriveUntil(1.5).withTimeout(0.2));
-    addCommands(new DriveUntil(1, 1, () -> {return Robot.coprocessor.isBallFound;})
-        .withTimeout(1));
-    addCommands(new AutoIntake(4, false).withTimeout(5));
-    addCommands(new DriveUntil(-1.5, -1.5, () -> {return Robot.ballHandler.ballCnt != 4;})
-        .withTimeout(0.8));
-    addCommands(new AutoShoot(true));
+    addCommands(new MoveIntake().withTimeout(0.3));
+    addCommands(new DriveUntil(1).withTimeout(0.5));
+    addCommands(new ManualIntake().withTimeout(1.5));
+    addCommands(new AutoShoot().withTimeout(2.5));
+    addCommands(new DriveUntil(1, -1, () -> Robot.coprocessor.isBallFound).withTimeout(0.6));
+    addCommands(new DriveUntil(0).withTimeout(1.4));
+    addCommands(new AutoIntake().withTimeout(3.5));
+    addCommands(new DriveUntil(-0.7, 0.7, () -> Robot.coprocessor.isTargetFound == 1).withTimeout(1));
+    addCommands(new AutoShoot().withTimeout(1.8));
+    addCommands(new AutoIntake().withTimeout(6));
+    // addCommands(new DriveUntil(-3).withTimeout(1));
+    addCommands(new AutoShoot().withTimeout(4));
+
+
   }
 }

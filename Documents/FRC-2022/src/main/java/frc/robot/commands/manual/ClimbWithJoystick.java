@@ -14,8 +14,32 @@ public class ClimbWithJoystick extends CommandBase {
   @Override
   public void execute() {
     // TODO limit and overrides
-    Robot.climber.winch.set(control.getWinchSpeed());
-    Robot.climber.hook.set(control.getWinchSpeed());
+    boolean override = false;
+    if(Robot.climber.leftEncoder.getPosition() <= Robot.climber.leftZero 
+    && Robot.climber.left.get() < 0){
+      Robot.climber.left.set(0);
+      override = true;
+    }
+    if(Robot.climber.leftEncoder.getPosition() >= Robot.climber.leftZero + 180 
+    && Robot.climber.left.get() > 0){
+      Robot.climber.left.set(0);
+      override = true;
+    }
+    if(Robot.climber.rightEncoder.getPosition() <= Robot.climber.rightZero 
+    && Robot.climber.right.get() < 0){
+      Robot.climber.right.set(0);
+      override = true;
+    }
+    if(Robot.climber.rightEncoder.getPosition() >= Robot.climber.rightZero + 180 
+    && Robot.climber.right.get() > 0){
+      Robot.climber.right.set(0);
+      override = true;
+    }
+
+    if(!override) {
+      Robot.climber.left.set(control.getLeftWinchSpeed());
+      Robot.climber.right.set(control.getRightWinchSpeed());  
+    }
   }
 
   @Override

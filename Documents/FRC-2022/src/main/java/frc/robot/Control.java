@@ -238,10 +238,19 @@ public class Control {
     private static final int MANUAL_INTAKE_BUTTON = 2;
     private static final int EJECT_BUTTON = 16;
     private static final int TOGGLE_INTAKE_BUTTON = 14;
-    private int intakeState = -1;
+    private int intakeState = 1;
 
     private static final int SECOND_EJECT_BUTTON = 2;
-    private static final int SECOND_RESET_BALL_CNT = 6;
+    private static final int SECOND_RESET_BALL_CNT = 11;
+    private static final int LEFT_UP = 5;
+    private static final int LEFT_DOWN = 3;
+    private static final int RIGHT_UP = 6;
+    private static final int RIGHT_DOWN = 4;
+    private static final double CLIMBER_SPEED = 0.7;
+
+
+
+
 
     public int getToggleIntake() {
         if(drive.getRawButtonPressed(TOGGLE_INTAKE_BUTTON)) 
@@ -321,17 +330,46 @@ public class Control {
     }
 
     // Climber
-    public double getWinchSpeed() {
+    public double getLeftWinchSpeed() {
+        
+        if (second.getRawButton(LEFT_DOWN)) {
+            return -CLIMBER_SPEED;
+        }
+
+        if(second.getRawButton(LEFT_UP)) {
+            return CLIMBER_SPEED;
+        } 
+
         if (!isOverride())
             return 0;
         switch (drive.getPOV()) {
             case 0:
-                return 0.5;
+                return CLIMBER_SPEED;
             case 180:
-                return -0.5;
-            default:
-                return 0;
+                return -CLIMBER_SPEED;
         }
+
+        return 0;
+    }
+
+    public double getRightWinchSpeed() {
+
+        if(second.getRawButton(RIGHT_UP)) {
+            return CLIMBER_SPEED;
+        } else if (second.getRawButton(RIGHT_DOWN)) {
+            return -CLIMBER_SPEED;
+        }
+
+        if (!isOverride())
+            return 0;
+        switch (drive.getPOV()) {
+            case 0:
+                return CLIMBER_SPEED;
+            case 180:
+                return -CLIMBER_SPEED;
+        }
+
+        return 0;
     }
     // public double getHookSpeed() {
     //     if (!isOverride())
