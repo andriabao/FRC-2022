@@ -60,6 +60,7 @@ public class AutoShoot extends CommandBase {
     dis2rpm.put(new InterpolatingDouble(114.193), new InterpolatingDouble(1786.0));
     dis2rpm.put(new InterpolatingDouble(117.679), new InterpolatingDouble(1786.0));
     dis2rpm.put(new InterpolatingDouble(128.137), new InterpolatingDouble(1821.0));
+    dis2rpm.put(new InterpolatingDouble(136.271), new InterpolatingDouble(1871.0));
     dis2rpm.put(new InterpolatingDouble(138.595), new InterpolatingDouble(1937.0));
     dis2rpm.put(new InterpolatingDouble(140.919), new InterpolatingDouble(1961.0));
     dis2rpm.put(new InterpolatingDouble(145.567), new InterpolatingDouble(1961.0));

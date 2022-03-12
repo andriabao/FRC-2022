@@ -53,7 +53,7 @@ public class Constants {
   // AutoShoot
   public static final double MAX_SHOOT_ANGLE_ERROR = 1.5;
   public static final double AUTO_SHOOT_HOLD_TIME = 0.5;
-  public static final double MAX_SHOOT_RPM_ERROR = 70;
+  public static final double MAX_SHOOT_RPM_ERROR = 60;
   public static final double SHOOTER_ANGLE = 3.7; // deg to the left from center line
   public static final double MIN_SHOOT_GAP_TIME = 0.35; // 0.35
   public static final double MAX_SHOOTER_FREE_SPIN_TIME = 1.5;

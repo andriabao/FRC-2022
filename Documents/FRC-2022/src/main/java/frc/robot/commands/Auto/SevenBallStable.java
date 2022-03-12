@@ -18,7 +18,7 @@ public class SevenBallStable extends SequentialCommandGroup {
     addCommands(new DriveUntil(0).withTimeout(1.4));
     addCommands(new AutoIntake().withTimeout(3.5));
     addCommands(new DriveUntil(-0.7, 0.7, () -> Robot.coprocessor.isTargetFound == 1).withTimeout(1));
-    addCommands(new AutoShoot().withTimeout(1.8));
+    addCommands(new AutoShoot().withTimeout(4));
     addCommands(new AutoIntake().withTimeout(6));
     // addCommands(new DriveUntil(-3).withTimeout(1));
     addCommands(new AutoShoot().withTimeout(4));
