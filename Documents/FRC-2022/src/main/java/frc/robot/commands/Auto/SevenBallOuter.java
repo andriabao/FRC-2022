@@ -10,7 +10,7 @@ import frc.robot.commands.manual.ManualIntake;
 
 public class SevenBallOuter extends SequentialCommandGroup {
   public SevenBallOuter() {
-    addCommands(new MoveIntake().withTimeout(0.3));
+    addCommands(new MoveIntake().withTimeout(1.2));
     addCommands(new DriveUntil(1).withTimeout(0.5));
     addCommands(new ManualIntake().withTimeout(1.5));
     addCommands(new AutoShoot().withTimeout(2.5));
